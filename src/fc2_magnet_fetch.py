@@ -118,7 +118,7 @@ def read_config():
 
     p = "开了 " + proxy if proxie else "没开"
     print(f'配置加载好了 (代理{p})')
-    print(f'Cookie: PHPSESSID={phpsessid[:8]}... fcu={fcu[:8]}...')
+    print('Cookie: 已读取（不会在终端显示具体值）')
 
 
 def _gen_config():

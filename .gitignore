@@ -12,6 +12,12 @@ Downloads/
 
 # 用户配置（含敏感 Cookie）
 config.ini
+config.local.ini
+.env
+*.env
+cookies.txt
+*.cookie
+*.log
 
 # IDE
 .vscode/

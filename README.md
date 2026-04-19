@@ -1,73 +1,94 @@
 # FC2 Magnet Fetch
 
-批量收集 FC2 编号并检索对应链接。
+一个本地运行的小工具，用于按分类收集 FC2 编号，并检索对应链接。项目提供 CLI 和 Tkinter GUI 两种入口。
 
-灵感来自 [fc2_gather](https://github.com/supsupsuperstar/fc2_gather)，在此基础上增加了：
+## 功能
 
-- Cookie 强制校验（未配置不启动）
-- 分类筛选 + 指定数量抓取
-- 链接获取支持 `Ctrl+C` 中断
-- 配置文件自动生成与本地缓存管理
+- GUI 标签点选：点一下选择，再点一下取消
+- 支持指定采集数量，`0` 表示不限制
+- 支持运行中停止任务
+- 支持浅色、深色、跟随系统主题
+- 本地配置与运行输出默认不进入 Git
 
-## 参数配置
+## 快速开始
 
-首次运行前请确认根目录存在 `config.ini`。若不存在，可复制 `config.ini.example` 为 `config.ini`，或直接运行程序自动生成模板。
+1. 安装依赖：
 
-必须配置：
+```bash
+pip install requests
+```
 
-- `PHPSESSID`
-- `fcu`
+2. 准备配置：
 
-获取方式：
+```bash
+copy config.ini.example config.ini
+```
 
-1. 浏览器登录 https://adult.contents.fc2.com/
-2. 打开开发者工具（F12）
-3. 在 Cookies 中复制 `CONTENTS_FC2_PHPSESSID` 与 `fcu`
+3. 在 `config.ini` 填入站点登录后的会话字段。
 
-## 运行方式
+4. 启动 GUI：
+
+```bash
+python src/run_gui.py
+```
+
+CLI 入口仍然保留：
 
 ```bash
 python src/fc2_magnet_fetch.py
 ```
 
-## 菜单说明
+## GUI 用法
 
-程序启动后可用菜单：
+1. 填写会话字段，点击 `应用 Cookie`
+2. 在标签区点选分类，或切换到 `手动 URL`
+3. 填写数量，点击 `采集编号`
+4. 采集完成后点击 `检索链接`
+5. 在底部结果区查看日志和输出文件
 
-- `1` 分类筛选获取（指定数量）
-- `2` 分类筛选获取（全部）
-- `3` 手动输入页面 URL 获取
-- `4` 根据 `list.txt` 获取链接（支持 `Ctrl+C` 中断）
-- `5` 预览 `list.txt`
-- `6` 临时更新 Cookie（仅当前运行有效）
-- `q` 退出
+## 目录结构
 
-## 分类筛选说明
+```text
+fc2_magnet/
+├─ Downloads/                 # 运行输出，已忽略
+├─ src/
+│  ├─ fc2_magnet_fetch.py     # CLI 入口
+│  ├─ run_gui.py              # GUI 入口
+│  └─ fc2_gui/
+│     ├─ config.py            # 配置加载/保存
+│     ├─ constants.py         # 常量
+│     ├─ service.py           # 请求、解析、文件写入
+│     └─ gui.py               # Tkinter 界面
+├─ config.ini.example         # 配置模板
+└─ README.md
+```
 
-- 支持输入一个或多个分类编号，空格或逗号分隔（如：`30 42`）
-- 支持输入 `all` 或 `0` 一次性全选
-- 非法编号会自动忽略并提示
-- 选择后会自动生成搜索 URL
+## 输出文件
 
-说明：分类具体名称仅在程序内显示，文档中不展开列出。
+默认输出到 `Downloads/`：
 
-## 缓存文件
-
-程序会在下载目录（默认 `./Downloads/`）写入：
-
-- `list.txt`：收集到的编号
-- `magnet.txt`：已获取到的链接
+- `list.txt`：采集到的编号
+- `magnet.txt`：检索到的链接
 - `no_magnet.txt`：未检索到结果的编号
 - `error.txt`：请求失败的编号
 
-## 注意事项
+## 隐私与提交注意
 
-- 数据来源：<https://adult.contents.fc2.com/>、<https://sukebei.nyaa.si/>
-- 请合理控制请求频率，避免高并发或长时间连续抓取
-- 网络环境受限时请配置代理
-- Cookie 过期后需重新填写
-- `config.ini` 已加入 `.gitignore`，不会被提交
+以下内容不要提交到仓库：
+
+- `config.ini`
+- Cookie、会话字段、账号信息
+- `Downloads/` 下的运行结果
+- `.env`、日志、临时缓存、`__pycache__`
+
+项目已经在 `.gitignore` 中默认忽略这些文件。推送前建议执行：
+
+```bash
+git status --short
+```
+
+确认没有本地配置、个人路径或运行结果进入待提交列表。
 
 ## 免责声明
 
-本项目仅用于技术交流与学习，不提供任何资源存储或分发服务。请遵守当地法律法规与站点条款。
+本项目仅用于技术交流与学习。请遵守当地法律法规与目标站点条款，合理控制请求频率。
