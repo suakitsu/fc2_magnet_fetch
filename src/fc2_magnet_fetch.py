@@ -18,6 +18,26 @@ idlist = []
 mu = threading.Lock()
 stop_event = threading.Event()
 
+# FC2 标签列表 (id -> 中文名)
+GENRES = {
+    30: '素人',
+    31: '美丽女人',
+    32: 'OL',
+    33: '恋物癖/变态',
+    34: '巨乳/美乳',
+    35: '自拍',
+    36: '自慰',
+    37: '野外/露出',
+    38: 'Cosplay/同人',
+    39: '乱交/3P',
+    40: '男性同性',
+    41: '西方金发/白人',
+    42: '动漫/卡通',
+    43: '其他',
+    44: 'SM',
+    45: 'BL',
+}
+
 def _config_path():
     return os.path.join(BASE_DIR, 'config.ini')
 
@@ -295,31 +315,75 @@ def input_url():
         print('URL不对，要fc2内容站的')
 
 
+def pick_genres():
+    """选标签，返回拼好的搜索URL"""
+    items = sorted(GENRES.items(), key=lambda x: x[0])
+    print('\n  FC2 标签列表')
+    print('  ' + '-' * 30)
+    for gid, name in items:
+        print(f'  [{gid}] {name}')
+    print('  ' + '-' * 30)
+    print('  输入编号，多个用空格或逗号隔开')
+    print('  例: 38 42  (回车=全不选)')
+    
+    raw = input("\n选标签: ").strip()
+    if not raw:
+        return None
+    
+    # 解析用户输入的编号
+    selected = []
+    for part in re.split(r'[\s,，]+', raw):
+        part = part.strip()
+        if part.isdigit():
+            g_id = int(part)
+            if g_id in GENRES and g_id not in selected:
+                selected.append(g_id)
+
+    if not selected:
+        print('没选到有效的标签')
+        return None
+
+    # 拼URL
+    qs_parts = [f'genre[{i+1}]={g}' for i, g in enumerate(selected)]
+    url = 'https://adult.contents.fc2.com/search/?' + '&'.join(qs_parts)
+    names = ', '.join(GENRES[g] for g in selected)
+    print(f'\n已选: {names}')
+    print(f'URL: {url}\n')
+    return url
+
+
 def set_menu():
     global idlist
     while True:
         print(f"""
   FC2 Magnet Tool {VERSION}
   ══════════════════════════
-   1: 获取番号（指定数量）
-   2: 获取全部番号
-   3: 获取磁力（Ctrl+C可中断）
-   4: 看看list.txt
-   5: 更新Cookies
+   1: 选标签获取（指定数量）
+   2: 选标签获取（全部）
+   3: 手动输入URL获取
+   4: 获取磁力（Ctrl+C可中断）
+   5: 看看list.txt
+   6: 更新Cookies
    q: 退出
   ══════════════════════════""")
         cmd = input("选: ").strip()
 
         if cmd == '1':
-            url = input_url()
-            c = input("要几个（0=全要）: ").strip()
-            c = int(c) if c.isdigit() else 0
-            get_fc2id(url, max_count=c)
+            url = pick_genres()
+            if url:
+                c = input("要几个（0=全要）: ").strip()
+                c = int(c) if c.isdigit() else 0
+                get_fc2id(url, max_count=c)
 
         elif cmd == '2':
-            get_fc2id(input_url())
+            url = pick_genres()
+            if url:
+                get_fc2id(url)
 
         elif cmd == '3':
+            get_fc2id(input_url())
+
+        elif cmd == '4':
             idlist = read_list('list.txt')
             if idlist:
                 clean_list('magnet.txt')
@@ -332,7 +396,7 @@ def set_menu():
             else:
                 print('没番号列表，先去获取')
 
-        elif cmd == '4':
+        elif cmd == '5':
             fp = download_path + 'list.txt'
             if os.path.exists(fp):
                 with open(fp, 'r', encoding='utf-8') as f:
@@ -345,7 +409,7 @@ def set_menu():
             else:
                 print('list.txt不存在')
 
-        elif cmd == '5':
+        elif cmd == '6':
             print('\n怎么拿Cookie:')
             print('  1. 浏览器登录 https://adult.contents.fc2.com/')
             print('  2. F12 → Application → Cookies')
