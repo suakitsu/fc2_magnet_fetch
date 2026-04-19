@@ -324,20 +324,35 @@ def pick_genres():
         print(f'  [{gid}] {name}')
     print('  ' + '-' * 30)
     print('  输入编号，多个用空格或逗号隔开')
-    print('  例: 38 42  (回车=全不选)')
+    print('  例: 38 42  (输入 all 或 0 = 全选)')
     
     raw = input("\n选标签: ").strip()
     if not raw:
         return None
-    
-    # 解析用户输入的编号
-    selected = []
-    for part in re.split(r'[\s,，]+', raw):
-        part = part.strip()
-        if part.isdigit():
-            g_id = int(part)
-            if g_id in GENRES and g_id not in selected:
-                selected.append(g_id)
+
+    raw_lower = raw.lower()
+    if raw_lower in ('all', '0'):
+        selected = [gid for gid, _ in items]
+    else:
+        # 解析用户输入的编号
+        selected = []
+        invalid = []
+        for part in re.split(r'[\s,，]+', raw):
+            part = part.strip()
+            if not part:
+                continue
+            if part.isdigit():
+                g_id = int(part)
+                if g_id in GENRES:
+                    if g_id not in selected:
+                        selected.append(g_id)
+                else:
+                    invalid.append(part)
+            else:
+                invalid.append(part)
+
+        if invalid:
+            print('以下编号无效，已忽略: ' + ', '.join(invalid))
 
     if not selected:
         print('没选到有效的标签')
@@ -347,7 +362,7 @@ def pick_genres():
     qs_parts = [f'genre[{i+1}]={g}' for i, g in enumerate(selected)]
     url = 'https://adult.contents.fc2.com/search/?' + '&'.join(qs_parts)
     names = ', '.join(GENRES[g] for g in selected)
-    print(f'\n已选: {names}')
+    print(f'\n已选 {len(selected)} 个标签: {names}')
     print(f'URL: {url}\n')
     return url
 

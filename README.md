@@ -1,52 +1,73 @@
 # FC2 Magnet Fetch
 
-批量收集FC2影片番号，获取磁力链接。
+批量收集 FC2 编号并检索对应链接。
 
-灵感来自 [fc2_gather](https://github.com/supsupsuperstar/fc2_gather)，在此基础上加了Cookie强制配置、指定数量获取、磁力获取可中断等功能。
+灵感来自 [fc2_gather](https://github.com/supsupsuperstar/fc2_gather)，在此基础上增加了：
+
+- Cookie 强制校验（未配置不启动）
+- 分类筛选 + 指定数量抓取
+- 链接获取支持 `Ctrl+C` 中断
+- 配置文件自动生成与本地缓存管理
 
 ## 参数配置
 
-看 `config.ini`，没有的话把 `config.ini.example` 复制一份改成 `config.ini`。
+首次运行前请确认根目录存在 `config.ini`。若不存在，可复制 `config.ini.example` 为 `config.ini`，或直接运行程序自动生成模板。
 
-必须填 `fcu` 和 `PHPSESSID`，不填跑不了。拿法：
+必须配置：
+
+- `PHPSESSID`
+- `fcu`
+
+获取方式：
 
 1. 浏览器登录 https://adult.contents.fc2.com/
-2. F12 → Application → Cookies
-3. 复制 `CONTENTS_FC2_PHPSESSID` 和 `fcu` 的值填进去
+2. 打开开发者工具（F12）
+3. 在 Cookies 中复制 `CONTENTS_FC2_PHPSESSID` 与 `fcu`
+
+## 运行方式
+
+```bash
+python src/fc2_magnet_fetch.py
+```
+
+## 菜单说明
+
+程序启动后可用菜单：
+
+- `1` 分类筛选获取（指定数量）
+- `2` 分类筛选获取（全部）
+- `3` 手动输入页面 URL 获取
+- `4` 根据 `list.txt` 获取链接（支持 `Ctrl+C` 中断）
+- `5` 预览 `list.txt`
+- `6` 临时更新 Cookie（仅当前运行有效）
+- `q` 退出
+
+## 分类筛选说明
+
+- 支持输入一个或多个分类编号，空格或逗号分隔（如：`30 42`）
+- 支持输入 `all` 或 `0` 一次性全选
+- 非法编号会自动忽略并提示
+- 选择后会自动生成搜索 URL
+
+说明：分类具体名称仅在程序内显示，文档中不展开列出。
 
 ## 缓存文件
 
-| 文件 | 说明 |
-|------|------|
-| list.txt | 查找到的番号 |
-| magnet.txt | 获取到的磁力链接 |
-| no_magnet.txt | 没搜到磁力的番号 |
-| error.txt | 网络等原因搜磁力失败的番号 |
+程序会在下载目录（默认 `./Downloads/`）写入：
 
-## 使用说明
-
-### 1. 获取番号列表
-
-直接在工具里选标签，支持多选（空格或逗号隔开），比如输 `38 42` 就是 Cosplay/同人 + 动漫/卡通。也可以手动输入URL。
-
-菜单1：选标签+指定数量
-菜单2：选标签+全部
-菜单3：手动输URL
-
-### 2. 获取磁力
-
-自动从 sukebei 上搜索 list.txt 内所有番号的磁力链接。番号文件可以自己增删改，拿来查非FC2番号也行。
-
-获取时按 Ctrl+C 能停，已拿到的不会丢。
+- `list.txt`：收集到的编号
+- `magnet.txt`：已获取到的链接
+- `no_magnet.txt`：未检索到结果的编号
+- `error.txt`：请求失败的编号
 
 ## 注意事项
 
-- 数据来源：https://adult.contents.fc2.com/ 、https://sukebei.nyaa.si/
-- 别长时间、大批量、多线程抓，容易给服务器搞崩也容易封IP
-- 国内用户需要设代理
-- Cookie 会过期，过期了重新拿
-- config.ini 在 gitignore 里，不会提交上去
+- 数据来源：<https://adult.contents.fc2.com/>、<https://sukebei.nyaa.si/>
+- 请合理控制请求频率，避免高并发或长时间连续抓取
+- 网络环境受限时请配置代理
+- Cookie 过期后需重新填写
+- `config.ini` 已加入 `.gitignore`，不会被提交
 
 ## 免责声明
 
-本应用仅用于爬虫技术交流学习，搜索结果均来自源站，不提供任何资源下载，亦不承担任何责任。
+本项目仅用于技术交流与学习，不提供任何资源存储或分发服务。请遵守当地法律法规与站点条款。
