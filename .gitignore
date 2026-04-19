@@ -1,0 +1,22 @@
+# 构建产物
+dist/
+build/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 下载输出
+Downloads/
+
+# 用户配置（含敏感 Cookie）
+config.ini
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store

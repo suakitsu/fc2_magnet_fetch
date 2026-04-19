@@ -1,0 +1,8 @@
+[下载设置]
+Proxy = http://localhost:10808
+Download_Path = ./Downloads/
+Max_dl = 2
+Max_retry = 3
+Cookies = 
+fcu = 
+PHPSESSID = 
