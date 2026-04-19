@@ -9,6 +9,8 @@
 - 支持运行中停止任务
 - 支持浅色、深色、跟随系统主题
 - 本地配置与运行输出默认不进入 Git
+- <img width="1182" height="852" alt="image" src="https://github.com/user-attachments/assets/b01a743d-6cad-4f63-8140-730f0ffe0948" />
+
 
 ## 快速开始
 
@@ -70,7 +72,10 @@ fc2_magnet/
 - `list.txt`：采集到的编号
 - `magnet.txt`：检索到的链接
 - `no_magnet.txt`：未检索到结果的编号
-- `error.txt`：请求失败的编号
+c
+
+## 最后磁力链接下载
+- 可以使用https://github.com/qbittorrent/qBittorrent
 
 ## 隐私与提交注意
 
