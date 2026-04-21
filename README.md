@@ -2,6 +2,10 @@
 
 一个本地运行的小工具，用于按分类收集 FC2 编号，并检索对应链接。项目提供 CLI 和 Tkinter GUI 两种入口。
 
+## 相关鸣谢
+灵感来源https://github.com/supsupsuperstar/fc2_gather
+感谢提供
+
 ## 功能
 
 - GUI 标签点选：点一下选择，再点一下取消
